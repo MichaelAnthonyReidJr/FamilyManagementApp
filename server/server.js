@@ -50,8 +50,9 @@ app.post("/family_member", async (req, res) => {
       user_type,
       role,
       family_id,
+      image,
     } = req.body;
-    
+
     const member = new FamilyMember({
       name,
       email,
@@ -62,6 +63,7 @@ app.post("/family_member", async (req, res) => {
       user_type,
       role,
       family_id,
+      image,
     });
 
     const result = await FamilyMember.collection.insertOne(member);
@@ -74,6 +76,29 @@ app.post("/family_member", async (req, res) => {
 });
 
 //--------------------------------------------------------------------------------------------
+
+//update image in file
+app.put("/family_member/:name", async (req, res) => {
+  const { name } = req.params;
+  const { image } = req.body;
+  const imageBuffer = Buffer.from(image);
+
+  try {
+    const result = await FamilyMember.updateOne(
+      { name },
+      { $set: { image: imageBuffer } }
+    );
+    res.status(200).json(result);
+    console.log(result);
+  } catch (error) {
+    console.log(error);
+    res
+      .status(500)
+      .json({ error: "Error occured while updating family member" });
+  }
+});
+
+//------------------------------------------------------------------------------------------------------
 
 //2.get all family members...............tested by Thunder
 app.get("/family_members", async (req, res) => {
@@ -246,6 +271,18 @@ app.delete("/task/:description", async (req, res) => {
   }
 });
 
+app.get("/bedrooms", async (req, res) => {
+  try {
+    const bedroom = await Bedroom.find({});
+    res.status(200).json(bedroom);
+    console.log(bedroom);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Error occured while getting bedrooms" });
+  }
+  return;
+});
+
 //12.add bedroom.....................................Tested by Thunder
 app.post("/bedroom", async (req, res) => {
   try {
@@ -270,6 +307,19 @@ app.delete("/bedroom/:name", async (req, res) => {
     res.status(500).json({ error: "Error occured while deleting bedroom" });
   }
 });
+app.get("/homework", async (req, res) => {
+  try {
+    const homework = await Homework.find({});
+    res.status(200).json(homework);
+    console.log(homework);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Error occured while getting homework" });
+  }
+  return;
+  // return;
+});
+
 
 //15.Add homework Assignment...................................Tested by Thunder
 app.post("/homework", async (req, res) => {
@@ -391,7 +441,8 @@ app.get("/exercise/:name", async (req, res) => {
     console.log(exercise);
   } catch (error) {
     console.log(error);
-    res.status(500)
+    res
+      .status(500)
       .json({ error: `Error occured while getting ${name}'s exercise` });
   }
 });

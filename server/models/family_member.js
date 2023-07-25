@@ -19,6 +19,7 @@ const family_memberSchema = new Schema({
     required: true,
   },
   family_id: { type: Schema.Types.ObjectId, ref: "family", required: true },
+  image: { type: Buffer, required: true }
 });
 const FamilyMember = mongoose.model("family_member", family_memberSchema);
 module.exports = FamilyMember;
